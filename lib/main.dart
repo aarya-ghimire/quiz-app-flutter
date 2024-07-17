@@ -78,82 +78,85 @@ class _QuizHomePageState extends State<QuizHomePage> {
     });
   }
 
-  Widget _buildOptionButton(String option) {
-    return ElevatedButton(
-      onPressed: () {
-        _answerQuestion(option);
-      },
-      child: Text(option),
-    );
-  }
-
-  List<Widget> _buildOptions() {
-    List<Widget> optionButtons = [];
-    for (String option in _questionsList![_currentQuestionIndex]['option']) {
-      optionButtons.add(_buildOptionButton(option));
-      optionButtons.add(SizedBox(height: 10));
-    }
-    return optionButtons;
-  }
-
-  @override
   Widget build(BuildContext context) {
     if (!_startQuiz) {
       return Scaffold(
-          appBar: AppBar(
-            title: Text("Quiz App"),
-            centerTitle: true,
-            backgroundColor: Colors.yellow,
-            elevation: 10,
-          ),
-          body: Center(
-            child: ElevatedButton(
-              onPressed: _startQuizfn,
-              child: Text('Start Quiz'),
-            ),
-          ));
-    } else if (_quizFinished) {
-      return Scaffold(
         appBar: AppBar(
-          title: Text("Quiz App"),
+          title: Text(
+            'Sample Quiz',
+          ),
           centerTitle: true,
-          backgroundColor: Colors.yellow,
-          elevation: 10,
         ),
         body: Center(
-          child: Column(
-            children: [
-              Text('Your Score: $_score / ${_questionsList!.length}'),
-              SizedBox(height: 10),
-              ElevatedButton(
-                  onPressed: _restartQuiz, child: Text('Restart Quiz')),
-            ],
+          child: ElevatedButton(
+            onPressed: _startQuizfn,
+            child: Text('Start Quiz'),
           ),
         ),
       );
-    } else {
+    } else if (_quizFinished) {
       return Scaffold(
         appBar: AppBar(
-          title: Text("Quiz App"),
-          centerTitle: true,
-          backgroundColor: Colors.yellow,
-          elevation: 10,
+          title: Text(
+            'Sample Quiz',
+          ),
         ),
         body: Center(
           child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text(
-                _questionsList![_currentQuestionIndex]['question'],
-                style: TextStyle(fontSize: 20),
+              Text('Your score: $_score / ${_questionsList!.length}'),
+              SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: _restartQuiz,
+                child: Text('Restart Quiz'),
               ),
-              SizedBox(
-                height: 10,
-              ),
-              ..._buildOptions(),
             ],
           ),
         ),
       );
     }
+
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("Quiz App"),
+        centerTitle: true,
+        backgroundColor: Colors.yellow,
+        elevation: 10,
+      ),
+      body: Center(
+        child: Column(
+          children: [
+            // Display question in a row
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Expanded(
+                  child: Text(
+                    _questionsList![_currentQuestionIndex]['question'],
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(height: 10),
+            // Build options just below the question
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: _questionsList![_currentQuestionIndex]['option']
+                  .map<Widget>((option) => Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 5.0),
+                        child: ElevatedButton(
+                          onPressed: () => _answerQuestion(option),
+                          child: Text(option),
+                        ),
+                      ))
+                  .toList(),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }
