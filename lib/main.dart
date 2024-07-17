@@ -35,6 +35,7 @@ class _QuizHomePageState extends State<QuizHomePage> {
   int _currentQuestionIndex = 0;
   int _score = 0;
   bool _quizFinished = false;
+  bool _startQuiz = false;
 
   @override
   void initState() {
@@ -67,6 +68,13 @@ class _QuizHomePageState extends State<QuizHomePage> {
       _currentQuestionIndex = 0;
       _score = 0;
       _quizFinished = false;
+      _startQuiz = false;
+    });
+  }
+
+  void _startQuizfn() {
+    setState(() {
+      _startQuiz = true;
     });
   }
 
@@ -90,7 +98,21 @@ class _QuizHomePageState extends State<QuizHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    if (_quizFinished) {
+    if (!_startQuiz) {
+      return Scaffold(
+          appBar: AppBar(
+            title: Text("Quiz App"),
+            centerTitle: true,
+            backgroundColor: Colors.yellow,
+            elevation: 10,
+          ),
+          body: Center(
+            child: ElevatedButton(
+              onPressed: _startQuizfn,
+              child: Text('Start Quiz'),
+            ),
+          ));
+    } else if (_quizFinished) {
       return Scaffold(
         appBar: AppBar(
           title: Text("Quiz App"),
