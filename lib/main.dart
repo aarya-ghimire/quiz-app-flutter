@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:flutter/services.dart';
+import 'package:read_from_file/models/quiz_model.dart';
+import 'package:read_from_file/services/quiz_service.dart';
 
 void main() {
   runApp(MyApp());
@@ -18,10 +20,10 @@ class MyApp extends StatelessWidget {
   }
 }
 
-Future<List<dynamic>> loadJson() async {
-  String jsonString = await rootBundle.loadString('assets/data.json');
-  return json.decode(jsonString)['quiz'];
-}
+// Future<List<dynamic>> loadJson() async {
+//   String jsonString = await rootBundle.loadString('assets/data.json');
+//   return json.decode(jsonString)['quiz'];
+// }
 
 class QuizHomePage extends StatefulWidget {
   const QuizHomePage({super.key});
@@ -31,7 +33,7 @@ class QuizHomePage extends StatefulWidget {
 }
 
 class _QuizHomePageState extends State<QuizHomePage> {
-  List<dynamic>? _questionsList;
+  List<QuizQuestion>? _questionsList;
   int _currentQuestionIndex = 0;
   int _score = 0;
   bool _quizFinished = false;
@@ -44,14 +46,14 @@ class _QuizHomePageState extends State<QuizHomePage> {
   }
 
   Future<void> _loadQuestions() async {
-    List<dynamic> questions = await loadJson();
+    List<QuizQuestion> questions = await fetchQuizQuestions();
     setState(() {
       _questionsList = questions;
     });
   }
 
   void _answerQuestion(String answer) {
-    if (answer == _questionsList![_currentQuestionIndex]['answer']) {
+    if (answer == _questionsList![_currentQuestionIndex].answer) {
       _score++;
     }
     setState(() {
@@ -133,7 +135,7 @@ class _QuizHomePageState extends State<QuizHomePage> {
               children: [
                 Expanded(
                   child: Text(
-                    _questionsList![_currentQuestionIndex]['question'],
+                    _questionsList![_currentQuestionIndex].question,
                     style: TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
                     textAlign: TextAlign.center,
                   ),
@@ -144,7 +146,8 @@ class _QuizHomePageState extends State<QuizHomePage> {
             // Build options just below the question
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
-              children: _questionsList![_currentQuestionIndex]['option']
+              children: _questionsList![_currentQuestionIndex]
+                  .options
                   .map<Widget>((option) => Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 5.0),
                         child: ElevatedButton(
